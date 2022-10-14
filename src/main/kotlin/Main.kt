@@ -1,6 +1,6 @@
 import kotlin.random.Random
 
-// Enum to hold the options for each Attack
+// Enum to hold the options for each Attack. Makes code more understandable
 enum class Weapon{ROCK, PAPER, SCISSORS}
 
 // Class to hold a player/enemy Attack choice and facilitate comparison
@@ -9,6 +9,11 @@ class Attack(private var option: Weapon){
         return option
     }
 
+    /*
+    * This is where all the fight logic is held. Compares weapons to see which is "bigger",
+    * i.e. which wins a contest. Fight makes use of this to determine who loses health, but
+    * all the output explaining what happened to the player is done here for convenience.
+    * */
     operator fun compareTo(rhs:Attack) : Int{
         when (option){
             Weapon.ROCK->{
@@ -63,16 +68,28 @@ class Attack(private var option: Weapon){
 open class Entity {
     protected var health = 10
     open fun getMove():Attack{ return Attack(Weapon.SCISSORS)}
+
+    /*
+    * We need health to be Read-only for outsiders, but editable by children who inherit getHit.
+    * Problem, Kotlin auto-generates private get"varName" functions for protected vars, but I want to make
+    * a public GetHealth, because that's what it is.
+    * Solution, @jvmName. Multiple functions in same class with same name, but different scope.
+    * */
     @JvmName("getHealth1")
     fun getHealth() : Int{ return health }
     open fun getHit(){ health -= 1}
+
+    // Shouldn't ever see this, don't make base class entities.
     open fun display() { println("If you're seeing this, an error happened. Entity as enemy.")}
 }
 
 // Class for player interaction. Includes I/O and player stats.
 class Player :Entity(){
+
+    // Handles I/O of player attack choice.
     override fun getMove(): Attack {
         while (true){
+            println("What will you wield: Club, Shield, or Sword?")
             val attackInput = readln()
             when(attackInput.lowercase()){
                 "1","rock","club"->{return Attack(Weapon.ROCK)}
@@ -86,6 +103,7 @@ class Player :Entity(){
 
 // Base class for enemies, simplifies interface in fight.
 open class Enemy :Entity(){
+    // Shouldn't ever see this. Don't make base class Enemies
     override fun display() {
         println("If you're seeing this, an error happened. Enemy as enemy.")
     }
@@ -186,12 +204,14 @@ fun main(args: Array<String>) {
 
     var mainMenuInput =  ""
 
-    println("Welcome to ADD GAME NAME HERE!")
+    println("Welcome to Fantasy Fight")
+    println("Clubs overpower swords, Swords weave around shields, and Shields block clubs.")
     while(mainMenuInput != "exit"){
         mainMenuInput = mainMenu()
         try{
             val choice = mainMenuInput.toInt()
             val fight = Fight(choice)
+            println("*******************")
             fight.start()
         }
         catch(nfe : NumberFormatException){ /* Nothing */ }
@@ -205,11 +225,16 @@ fun mainMenu():String{
     println("1. Skeleton")
     println("2. Zombie")
     println("3. Goblin")
+    println("Exit. Abandon the fight")
     val choice = readln()
-    when(choice){
+    when(choice.lowercase()){
         "1","2","3"->{}
-        "exit"->{
+        "skeleton"->{return "1"}
+        "zombie"->{return "2"}
+        "goblin"->{return "3"}
+        "exit", "e", "q"->{
             println("Bye!")
+            return "exit"
         }
         else->{
             println("That's not a choice!")
@@ -218,6 +243,7 @@ fun mainMenu():String{
     return choice
 }
 
+// Converts int choice into enemy object
 fun generateEnemy(choice : Int) : Enemy{
     return when(choice){
         1->Skeleton()
