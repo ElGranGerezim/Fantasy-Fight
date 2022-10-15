@@ -3,10 +3,9 @@
 A simple command line rock-paper-scissors clone with fantasy themes, Club-Shield-Sword.
 Currently, has 3 different enemy types with different strategies/tendencies.
 
+Created to help me learn Kotlin principles and get experience with the IntelliJ IDE.
 
-Created to help me learn Kotlin principles and get experience using IntelliJ Idea.
-
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/a5KmL-9Jyq8)
 
 # Development Environment
 

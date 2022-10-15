@@ -71,7 +71,7 @@ open class Entity {
 
     /*
     * We need health to be Read-only for outsiders, but editable by children who inherit getHit.
-    * Problem, Kotlin auto-generates private get"varName" functions for protected vars, but I want to make
+    * Problem, Kotlin auto-generates private getter functions for protected vars, but I want to make
     * a public GetHealth, because that's what it is.
     * Solution, @jvmName. Multiple functions in same class with same name, but different scope.
     * */
@@ -179,10 +179,17 @@ class Fight(choice : Int){
     }
 
     private fun battleLoop(){
+        // Battle to the death. 2 man enter, 1 man leave
         while ((player.getHealth() > 0) and (enemy.getHealth() > 0)){
+            // Show us what's happening
             displayFightStatus()
+
+            // Get their attacks
             val playerAttack = player.getMove()
             val enemyAttack = enemy.getMove()
+
+            // Overridden compareto in attack results in 1 if player wins,
+            // 0 if it is a tie, or -1 if enemy wins.
             val result = playerAttack.compareTo(enemyAttack)
             if (result > 0){
                 enemy.getHit()
@@ -190,6 +197,7 @@ class Fight(choice : Int){
                 player.getHit()
             }
         }
+        // Someone has died, but who? Figure it out and display the victor.
         if(player.getHealth() == 0) println("You have been felled in battle by a ${enemy.getName()}!")
         else println("You have triumphed over the ${enemy.getName()}!")
     }
